@@ -1,1 +1,3 @@
-# pzk-website
+# PZKendo Member Zone
+
+* coded in Flask
