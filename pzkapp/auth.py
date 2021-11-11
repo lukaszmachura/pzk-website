@@ -5,7 +5,7 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from flaskr.db import get_db
+from pzkapp.db import get_db
 
 # Blueprint for authentofication
 bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -14,25 +14,35 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
+        magic = request.form['magic']
         db = get_db()
         error = None
 
-        if not username:
-            error = 'Username is required.'
+        if not email:
+            error = 'Podaj email.'
         elif not password:
-            error = 'Password is required.'
+            error = 'Podaj hasło.'
+        elif not magic:
+            error = 'Podaj kod klubu.'
+
+        club = db.execute(
+            'SELECT * FROM club WHERE magic = ?', (magic.upper(),)
+        ).fetchone()
+
+        if not club:
+            error = 'Kod klubu nieprawidłowy.'
 
         if error is None:
             try:
                 db.execute(
-                    "INSERT INTO user (username, password) VALUES (?, ?)",
-                    (username, generate_password_hash(password)),
+                    "INSERT INTO member (email, password, club, club_id) VALUES (?, ?, ?, ?)",
+                    (email, generate_password_hash(password), club['name'], club['id']),
                 )
                 db.commit()
             except db.IntegrityError:
-                error = f"User {username} is already registered."
+                error = f"Użytkownik o semailu {email} jest już zarejestrowany."
             else:
                 return redirect(url_for("auth.login"))
 
@@ -44,24 +54,24 @@ def register():
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
         db = get_db()
         error = None
 
         user = db.execute(
-            'SELECT * FROM user WHERE username = ?', (username,)
+            'SELECT * FROM member WHERE email = ?', (email,)
         ).fetchone()
 
         if user is None:
-            error = 'Incorrect username.'
+            error = 'Niewłaściwy email.'
         elif not check_password_hash(user['password'], password):
-            error = 'Incorrect password.'
+            error = 'Niewłaściwe hasło.'
 
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            return redirect(url_for('index'))
+            return redirect(url_for('member.player'))
 
         flash(error)
 
@@ -77,8 +87,14 @@ def load_logged_in_user():
     else:
         db = get_db()
         g.user = db.execute(
-            'SELECT * FROM user WHERE id = ?', (user_id,)
+            'SELECT * FROM member WHERE id = ?', (user_id,)
         ).fetchone()
+
+        # if logged in, fetch user's club
+        if g.user:
+            g.user_club = db.execute(
+                'SELECT * FROM club WHERE id = ?', (g.user['club_id'],)
+            ).fetchone()
 
 
 @bp.route('/logout')
@@ -97,3 +113,8 @@ def login_required(view):
         return view(**kwargs)
 
     return wrapped_view
+
+
+@bp.route('/')
+def index():
+    return render_template('auth/login.html')

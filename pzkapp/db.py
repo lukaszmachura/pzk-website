@@ -1,4 +1,5 @@
 import sqlite3
+import os
 
 import click
 from flask import current_app, g
@@ -38,6 +39,39 @@ def init_db_command():
     click.echo('Initialized the database.')
 
 
+@click.command('build-clubs')
+@with_appcontext
+def build_clubs_command():
+    """Add clubs to database."""
+    db = get_db()
+
+    import csv
+    APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+    clubs_file = os.path.join(APP_ROOT, 'clubs.csv')
+
+    counter = 0
+    with open(clubs_file) as csvfile:
+        c = csv.reader(csvfile)
+        for club in c:
+            name = club[0]
+            abbrev = club[1]
+            email = club[2]
+            magic = club[3]
+            try:
+                db.execute(
+                    "INSERT INTO club (name, email, abbrev, magic) VALUES (?, ?, ?, ?)",
+                    (name, email, abbrev, magic.upper()),
+                )
+                counter += 1
+            except db.IntegrityError:
+                click.echo(f"Klub {name} istnieje w bazie.")
+    db.commit()
+
+
+    click.echo(f'{counter} clubs added.')
+
+
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
+    app.cli.add_command(build_clubs_command)

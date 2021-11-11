@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, render_template
 
 
 def create_app(test_config=None):
@@ -24,6 +24,10 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    @app.route('/')
+    def index():
+        return render_template('index.html')
+
     @app.errorhandler(404)
     def page_not_found(error):
         return "!404!"
@@ -33,9 +37,10 @@ def create_app(test_config=None):
 
     from . import auth
     app.register_blueprint(auth.bp)
+    # app.add_url_rule('/', endpoint='login')
 
-    # from . import blog
-    # app.register_blueprint(blog.bp)
+    from . import member
+    app.register_blueprint(member.bp)
     # app.add_url_rule('/', endpoint='index')
 
     return app

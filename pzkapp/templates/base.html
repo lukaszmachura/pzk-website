@@ -2,24 +2,50 @@
 <title>{% block title %}{% endblock %} - Strefa Zawodnika PZK</title>
 <!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-<nav>
-  <h1>Flaskr</h1>
-  <ul>
-    {% if g.user %}
-      <li><span>{{ g.user['username'] }}</span>
-      <li><a href="{{ url_for('auth.logout') }}">Wyloguj</a>
-    {% else %}
-      <li><a href="{{ url_for('auth.register') }}">Zarejestruj</a>
-      <li><a href="{{ url_for('auth.login') }}">Wyloguj</a>
-    {% endif %}
-  </ul>
-</nav>
-<section class="content">
-  <header>
-    {% block header %}{% endblock %}
-  </header>
-  {% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
-  {% endfor %}
-  {% block content %}{% endblock %}
-</section>
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div style="margin:0; padding:0; height:5px;"></div>
+        </div>
+    </div>
+    <div class="row">
+        <!-- <div class="col">
+            <img src="{{ url_for('static', filename='navlogo.png') }}" alt='PZK'>
+        </div> -->
+        <div class="col">
+            <div class="btn-group justify-content-end" role="group" aria-label="Basic example">
+                {% if g.user %}
+                    <button type="button" class="btn btn-secondary"><span>{{ g.user_club['abbrev'] }}</span></button>
+                    <a class="btn btn-secondary" href="{{ url_for('auth.logout') }}" role="button">Wyloguj</a>
+                {% else %}
+                    <a class="btn btn-secondary" href="{{ url_for('auth.login') }}" role="button">Zaloguj</a>
+                    <a class="btn btn-secondary" href="{{ url_for('auth.register') }}" role="button">Zarejestruj</a>
+                {% endif %}
+              </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div style="margin:0; padding:0; height:5px;"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <section class="content">
+              <!-- <header>
+                {% block header %}{% endblock %}
+              </header> -->
+              {% for message in get_flashed_messages() %}
+                <div class="flash">{{ message }}</div>
+              {% endfor %}
+              {% block content %}{% endblock %}
+            </section>
+        </div>
+    </div>
+
+</div>
