@@ -1,16 +1,17 @@
 DROP TABLE IF EXISTS member;
 DROP TABLE IF EXISTS club;
+DROP TABLE IF EXISTS event;
 
 CREATE TABLE club (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT UNIQUE NOT NULL,
-    magic TEXT UNIQUE NOT NULL,
-    email TEXT UNIQUE,
+    abbrev TEXT,
+    email TEXT UNIQUE, /*official club email*/
     address TEXT,
     phone TEXT,
     www TEXT,
     fb TEXT,
-    abbrev TEXT
+    magic TEXT UNIQUE NOT NULL  /*unique number for registration*/
 );
 
 CREATE TABLE member (
@@ -18,14 +19,41 @@ CREATE TABLE member (
   email TEXT UNIQUE NOT NULL,
   password TEXT NOT NULL,
   club TEXT NOT NULL,
-  club_id INTEGER NOT NULL,
-  name TEXT,
+  club_id UNSIGNED SMALLINT NOT NULL,
+  name TEXT NOT NULL,
   first_name TEXT,
+  pesel CHAR(11) NOT NULL DEFAULT "01010100000",
+  student BOOLEAN DEFAULT 0,
   kendo_grade TEXT,
   iaido_grade TEXT,
   jodo_grade TEXT,
   kendo_licence TEXT,
   iaido_licence TEXT,
   jodo_licence TEXT,
+  events TEXT,
+  funkcja_pzk TEXT,
+  instruktor_kendo BOOLEAN DEFAULT 0,
+  instruktor_iaido BOOLEAN DEFAULT 0,
+  instruktor_jodo BOOLEAN DEFAULT 0,
+  trener_kendo BOOLEAN DEFAULT 0,
+  trener_iaido BOOLEAN DEFAULT 0,
+  trener_jodo BOOLEAN DEFAULT 0,
+  delegate BOOLEAN DEFAULT 0,
   FOREIGN KEY (club_id) REFERENCES club (id)
+);
+
+CREATE TABLE event (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    date DATE,  /*YYYY-MM-DD*/
+    art TEXT,  /*k, i, j, ki, kj, ij, kij*/
+    host_id UNSIGNED SMALLINT NOT NULL DEFAULT 0,
+    venue TEXT,
+    www TEXT,
+    fb TEXT,
+    price UNSIGNED SMALLINT,
+    euro26 UNSIGNED SMALLINT,
+    promo UNSIGNED SMALLINT,
+    promo_date DATE,  /*YYYY-MM-DD*/
+    FOREIGN KEY (host_id) REFERENCES club (id)
 );

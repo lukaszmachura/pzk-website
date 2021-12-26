@@ -25,4 +25,8 @@ def player():
         'SELECT * FROM club'
     ).fetchall()
 
-    return render_template('member/player.html', member=member, clubs=clubs)
+    club = db.execute(
+        'SELECT * FROM club WHERE id = ?', (member['club_id'], )
+    ).fetchone()
+
+    return render_template('member/player.html', member=member, club=club)
