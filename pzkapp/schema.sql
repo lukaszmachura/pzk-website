@@ -35,7 +35,7 @@ CREATE TABLE member (
   jodo_licence TEXT,
   events TEXT,
   past_events TEXT,
-  pzk TEXT,
+  pzk TEXT,  -- funkcja w PZK
   kendo_instructor BOOLEAN DEFAULT 0,
   iaido_instructor BOOLEAN DEFAULT 0,
   jodo_instructor BOOLEAN DEFAULT 0,
