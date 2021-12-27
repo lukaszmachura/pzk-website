@@ -12,7 +12,7 @@ CREATE TABLE club (
     www TEXT,
     fb TEXT,
     licence TEXT,
-magic TEXT UNIQUE NOT NULL  /*unique number for registration*/
+    magic TEXT UNIQUE NOT NULL  /*unique number for registration*/
 );
 
 CREATE TABLE member (
