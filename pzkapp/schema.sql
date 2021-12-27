@@ -11,7 +11,7 @@ CREATE TABLE club (
     phone TEXT,
     www TEXT,
     fb TEXT,
-    -- licence TEXT,
+    licence TEXT,
     magic TEXT UNIQUE NOT NULL  /*unique number for registration*/
 );
 
